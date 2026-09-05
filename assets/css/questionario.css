@@ -822,7 +822,7 @@ h2,
   }
 }
 
-:root[data-theme="dark"] header,
+:root[data-theme="dark"] body > main > header,
 :root[data-theme="dark"] #quiz-card,
 :root[data-theme="dark"] footer {
   background: var(--surface) !important;
@@ -1155,6 +1155,7 @@ h2,
     font-size: 9.5pt;
     line-height: 1.35;
     color: #111827;
+    color-scheme: light;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
   }
@@ -1167,10 +1168,10 @@ h2,
   .print-study-header {
     margin-bottom: 7mm;
     padding: 5mm;
-    border: 1px solid #bfe5df;
-    border-top: 1.2mm solid #99ddd3;
+    border: 1px solid #bfe5df !important;
+    border-top: 1.2mm solid #99ddd3 !important;
     border-radius: 3mm;
-    background: linear-gradient(135deg, #fbfffe 0%, #effcf9 62%, #f0f9ff 100%);
+    background: linear-gradient(135deg, #fbfffe 0%, #effcf9 62%, #f0f9ff 100%) !important;
     break-inside: avoid;
     page-break-inside: avoid;
   }
