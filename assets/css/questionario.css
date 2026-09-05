@@ -1166,8 +1166,13 @@ h2,
 
   .print-study-header {
     margin-bottom: 7mm;
-    padding: 0 0 5mm;
-    border-bottom: 1.2mm solid #0f766e;
+    padding: 5mm;
+    border: 1px solid #bfe5df;
+    border-top: 1.2mm solid #99ddd3;
+    border-radius: 3mm;
+    background: linear-gradient(135deg, #fbfffe 0%, #effcf9 62%, #f0f9ff 100%);
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 
   .print-study-title-row {
@@ -1178,11 +1183,16 @@ h2,
   }
 
   .print-study-kicker {
-    margin: 0 0 1mm;
-    color: #0f766e;
-    font-size: 8.5pt;
+    display: inline-block;
+    margin: 0 0 2mm;
+    padding: 1mm 2.2mm;
+    border: 1px solid #99e6d9;
+    border-radius: 20mm;
+    background: #e5faf6;
+    color: #15756d;
+    font-size: 7.5pt;
     font-weight: 700;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
   }
 
@@ -1191,15 +1201,16 @@ h2,
     font-family: Arial, Helvetica, sans-serif;
     font-size: 19pt;
     line-height: 1.15;
-    color: #111827;
+    color: #164e63;
   }
 
   .print-study-count {
     flex: 0 0 auto;
     padding: 1.5mm 3mm;
+    border: 1px solid #8dd8ce;
     border-radius: 20mm;
-    background: #0f766e;
-    color: #fff;
+    background: #dff8f3;
+    color: #115e59;
     font-size: 8.5pt;
     font-weight: 700;
   }
@@ -1214,9 +1225,9 @@ h2,
   .print-study-meta > div {
     min-width: 0;
     padding: 2mm 2.5mm;
-    border: 1px solid #d1d5db;
+    border: 1px solid #cce7e3;
     border-radius: 1.5mm;
-    background: #f8fafc;
+    background: rgba(255, 255, 255, 0.86);
   }
 
   .print-study-meta span,
@@ -1226,7 +1237,7 @@ h2,
 
   .print-study-meta span {
     margin-bottom: 0.5mm;
-    color: #6b7280;
+    color: #4f7c78;
     font-size: 7.5pt;
     font-weight: 700;
     letter-spacing: 0.04em;
@@ -1235,23 +1246,25 @@ h2,
 
   .print-study-meta strong {
     overflow-wrap: anywhere;
-    color: #111827;
+    color: #274c49;
     font-size: 8.5pt;
   }
 
   .print-study-note {
     margin: 3.5mm 0 0;
     padding: 2.5mm 3.2mm;
-    border-left: 3px solid #0f766e;
-    background: #f0fdfa;
-    color: #134e4a;
+    border: 1px solid #c7e7f4;
+    border-left: 3px solid #7dd3e8;
+    border-radius: 1.5mm;
+    background: #f2fbfe;
+    color: #285a68;
     font-size: 8.5pt;
   }
 
   .print-question {
     margin: 0 0 6mm;
     padding: 0 0 6mm;
-    border-bottom: 1px solid #cbd5e1;
+    border-bottom: 1px solid #dbe7e6;
   }
 
   .print-question:last-child {
@@ -1275,7 +1288,7 @@ h2,
     font-family: Arial, Helvetica, sans-serif;
     font-size: 10.5pt;
     line-height: 1.3;
-    color: #111827;
+    color: #1f3b3a;
   }
 
   .print-question-number {
@@ -1284,10 +1297,10 @@ h2,
     justify-content: center;
     width: 8mm;
     height: 8mm;
-    border: 1px solid #0f766e;
+    border: 1px solid #8dd8ce;
     border-radius: 50%;
-    background: #f0fdfa;
-    color: #0f766e;
+    background: #eafaf7;
+    color: #15756d;
     font-size: 9pt;
     font-weight: 700;
   }
