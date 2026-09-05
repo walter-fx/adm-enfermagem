@@ -732,6 +732,7 @@ function buildFinalMarkup() {
 
 function buildStudyPrintMarkup() {
     const generatedAt = new Date().toLocaleString("pt-BR");
+    const totalQuestions = state.questions.length;
     const questionsMarkup = state.questions
         .map((question, questionIndex) => {
             const alternatives = Array.isArray(question.alternativas) ? question.alternativas : [];
@@ -742,8 +743,8 @@ function buildStudyPrintMarkup() {
                     return `
             <li class="print-alternative ${isCorrect ? "is-correct" : ""}">
               <span class="print-alternative-letter">${escapeHtml(alternative.letra)}</span>
-              <span>${escapeHtml(alternative.texto)}</span>
-              ${isCorrect ? '<strong class="print-correct-label">Resposta correta</strong>' : ""}
+              <span class="print-alternative-text">${escapeHtml(alternative.texto)}</span>
+              ${isCorrect ? '<strong class="print-correct-label"><span aria-hidden="true">✓</span> Correta</strong>' : ""}
             </li>
           `;
                 })
@@ -754,31 +755,42 @@ function buildStudyPrintMarkup() {
 
             return `
           <article class="print-question">
-            <h2><span>Questão ${questionIndex + 1}</span> ${escapeHtml(question.enunciado)}</h2>
+            <div class="print-question-heading">
+              <span class="print-question-number">${questionIndex + 1}</span>
+              <h2>${escapeHtml(question.enunciado)}</h2>
+            </div>
             <ol class="print-alternatives">${alternativesMarkup}</ol>
             <div class="print-answer">
-              <strong>Gabarito: ${escapeHtml(question.gabarito)}</strong>
-              ${correctAlternative ? ` — ${escapeHtml(correctAlternative.texto)}` : ""}
+              <p class="print-answer-title">Gabarito comentado</p>
+              <p class="print-answer-value">
+                <strong>${escapeHtml(question.gabarito)}</strong>
+                ${correctAlternative ? `<span>${escapeHtml(correctAlternative.texto)}</span>` : ""}
+              </p>
+              ${explanation}
             </div>
-            ${explanation}
           </article>
         `;
         })
         .join("");
 
     return `
-      <section id="print-study-sheet" aria-hidden="true">
+      <section id="print-study-sheet">
         <header class="print-study-header">
-          <p class="print-study-kicker">Material de revisão</p>
-          <h1>${escapeHtml(state.meta.disciplina || "Questionário")}</h1>
-          <div class="print-study-meta">
-            <span><strong>Participante:</strong> ${escapeHtml(state.studentName || "-")}</span>
-            <span><strong>Turma:</strong> ${escapeHtml(state.meta.turma || "-")}</span>
-            <span><strong>Gerado em:</strong> ${escapeHtml(generatedAt)}</span>
+          <div class="print-study-title-row">
+            <div>
+              <p class="print-study-kicker">Material de revisão</p>
+              <h1>${escapeHtml(state.meta.disciplina || "Questionário")}</h1>
+            </div>
+            <span class="print-study-count">${totalQuestions} questões</span>
           </div>
-          <p class="print-study-note">Folha para estudo com o gabarito indicado. As escolhas, os erros e o desempenho do participante não são exibidos.</p>
+          <div class="print-study-meta">
+            <div><span>Participante</span><strong>${escapeHtml(state.studentName || "-")}</strong></div>
+            <div><span>Turma</span><strong>${escapeHtml(state.meta.turma || "-")}</strong></div>
+            <div><span>Data da revisão</span><strong>${escapeHtml(generatedAt)}</strong></div>
+          </div>
+          <p class="print-study-note"><strong>Como usar:</strong> revise cada questão e confira o quadro “Gabarito comentado”. As respostas marcadas durante o questionário, os erros e a nota não aparecem neste material.</p>
         </header>
-        <main class="print-study-questions">${questionsMarkup}</main>
+        <div class="print-study-questions">${questionsMarkup}</div>
       </section>
     `;
 }
@@ -787,9 +799,13 @@ function printStudyQuestions() {
     if (!state.finished || state.questions.length === 0) return;
     document.getElementById("print-study-sheet")?.remove();
     document.body.insertAdjacentHTML("beforeend", buildStudyPrintMarkup());
+    document.body.classList.add("is-printing-study-sheet");
     window.addEventListener(
         "afterprint",
-        () => document.getElementById("print-study-sheet")?.remove(),
+        () => {
+            document.body.classList.remove("is-printing-study-sheet");
+            document.getElementById("print-study-sheet")?.remove();
+        },
         { once: true }
     );
     window.requestAnimationFrame(() => {
