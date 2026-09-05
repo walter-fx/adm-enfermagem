@@ -692,15 +692,25 @@ function buildFinalMarkup() {
       </div>
 
       <div class="results-cta">
-        <button
-          type="button"
-          class="${sendButtonClass}"
-          data-action="send-to-author"
-          ${state.sharedResult ? "disabled" : ""}
-        >
-          <i class="bi ${sendButtonIcon}"></i>
-          <span>${sendButtonLabel}</span>
-        </button>
+        <div class="results-primary-actions">
+          <button
+            type="button"
+            class="${sendButtonClass}"
+            data-action="send-to-author"
+            ${state.sharedResult ? "disabled" : ""}
+          >
+            <i class="bi ${sendButtonIcon}"></i>
+            <span>${sendButtonLabel}</span>
+          </button>
+          <button
+            type="button"
+            class="result-print-button"
+            data-action="print-study-questions"
+          >
+            <i class="bi bi-printer-fill"></i>
+            <span>Imprimir questões para estudo</span>
+          </button>
+        </div>
         <p class="results-helper">No próximo passo vamos ligar esse envio ao servidor para entregar seu resultado a ${authorName}.</p>
       </div>
 
@@ -718,6 +728,73 @@ function buildFinalMarkup() {
       ` : ""}
     </article>
   `;
+}
+
+function buildStudyPrintMarkup() {
+    const generatedAt = new Date().toLocaleString("pt-BR");
+    const questionsMarkup = state.questions
+        .map((question, questionIndex) => {
+            const alternatives = Array.isArray(question.alternativas) ? question.alternativas : [];
+            const correctAlternative = alternatives.find((alternative) => alternative.letra === question.gabarito);
+            const alternativesMarkup = alternatives
+                .map((alternative) => {
+                    const isCorrect = alternative.letra === question.gabarito;
+                    return `
+            <li class="print-alternative ${isCorrect ? "is-correct" : ""}">
+              <span class="print-alternative-letter">${escapeHtml(alternative.letra)}</span>
+              <span>${escapeHtml(alternative.texto)}</span>
+              ${isCorrect ? '<strong class="print-correct-label">Resposta correta</strong>' : ""}
+            </li>
+          `;
+                })
+                .join("");
+            const explanation = question.comentario_resposta_certa
+                ? `<p class="print-explanation"><strong>Explicação:</strong> ${escapeHtml(question.comentario_resposta_certa)}</p>`
+                : "";
+
+            return `
+          <article class="print-question">
+            <h2><span>Questão ${questionIndex + 1}</span> ${escapeHtml(question.enunciado)}</h2>
+            <ol class="print-alternatives">${alternativesMarkup}</ol>
+            <div class="print-answer">
+              <strong>Gabarito: ${escapeHtml(question.gabarito)}</strong>
+              ${correctAlternative ? ` — ${escapeHtml(correctAlternative.texto)}` : ""}
+            </div>
+            ${explanation}
+          </article>
+        `;
+        })
+        .join("");
+
+    return `
+      <section id="print-study-sheet" aria-hidden="true">
+        <header class="print-study-header">
+          <p class="print-study-kicker">Material de revisão</p>
+          <h1>${escapeHtml(state.meta.disciplina || "Questionário")}</h1>
+          <div class="print-study-meta">
+            <span><strong>Participante:</strong> ${escapeHtml(state.studentName || "-")}</span>
+            <span><strong>Turma:</strong> ${escapeHtml(state.meta.turma || "-")}</span>
+            <span><strong>Gerado em:</strong> ${escapeHtml(generatedAt)}</span>
+          </div>
+          <p class="print-study-note">Folha para estudo com o gabarito indicado. As escolhas, os erros e o desempenho do participante não são exibidos.</p>
+        </header>
+        <main class="print-study-questions">${questionsMarkup}</main>
+      </section>
+    `;
+}
+
+function printStudyQuestions() {
+    if (!state.finished || state.questions.length === 0) return;
+    document.getElementById("print-study-sheet")?.remove();
+    document.body.insertAdjacentHTML("beforeend", buildStudyPrintMarkup());
+    window.addEventListener(
+        "afterprint",
+        () => document.getElementById("print-study-sheet")?.remove(),
+        { once: true }
+    );
+    window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => window.print());
+    });
 }
 
 function resetQuizSession(nextStudentName = state.studentName, options = {}) {
@@ -1050,6 +1127,11 @@ if (el.quizCard) {
                 if (!result.isConfirmed) return;
                 resetQuizSession(state.studentName, { preserveSharedResult: false });
             });
+            return;
+        }
+
+        if (actionButton?.dataset.action === "print-study-questions") {
+            printStudyQuestions();
             return;
         }
 
